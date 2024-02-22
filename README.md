@@ -1,2 +1,2 @@
 # mpv-mvtools-script
-My custiom vapoursynth-mvtools script for mpv
+A fork of maoiscat's "mvtools_3.py" script featured in the awesome-mpv script compilation and nand's original "mvtools.vpy" script.
