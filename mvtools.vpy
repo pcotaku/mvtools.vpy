@@ -4,7 +4,7 @@ clip = video_in.resize.Bicubic(format=vs.YUV420P8)
 vden = 1000
 vfps = container_fps*vden
 dfps = display_fps*vden
-if not (clip.width > 2000 or container_fps > 59):
+if not (clip.width > 1920 or container_fps > 59):
     vfps_num = int(container_fps * 1e8)
     vfps_den = int(1e8)
     dfps_num = int(dfps * 1e4)
