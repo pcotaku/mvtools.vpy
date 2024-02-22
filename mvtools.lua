@@ -14,7 +14,8 @@ mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
 mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=3, dct=5)
 clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=dfps, den=vden, mask=1)
 
-#--Skip frame rate conversion for >4K or >240fps content due to gpu bottleneck. ※Note: The spaces serving as indentation are imperative for the correct functionality of this script; replacing the spaces with indents will break it.
+#--Skip frame rate conversion for >4K or >240fps content due to gpu bottleneck. 
+#--※Note: The spaces serving as indentation are imperative for the correct functionality of this script; replacing the spaces with indents will break it.
 if not (clip.width > 3000 or clip.height > 2000 or container_fps > 240):
     vfps_num = int(container_fps * 1e8)
     vfps_den = int(1e8)
