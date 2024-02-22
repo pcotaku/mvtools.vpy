@@ -1,4 +1,4 @@
-#--A fork of maoiscat's "mvtools_3.py" featured in the awesome-mpv script compilation and nand's original "mvtools.vpy" scripts.
+#--A fork of A fork of maoiscat's "mvtools_3.py" script featured in the awesome-mpv script compilation and nand's original "mvtools.vpy" script.
 #--This script retains the integrity of the frame rate conversion option found in the original script while using maoiscat's logical operations.
 #--I've commented out code with a hashtag and two hyphens so my comments don't pass through the compiler.
 import vapoursynth as vs
