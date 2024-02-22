@@ -10,7 +10,7 @@ if not (clip.width > 3000 or clip.height > 2000 or vfps > dfps):
     dfps_num = int(dfps * 1e4)
     dfps_den = int(1e4)
     clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
-    print("Reflowing from ",vfps/vden," fps to ",dfps_num/dfps_den," fps.")
+    print("[mvtools.lua] Converting this video's frame rate from",vfps/vden,"fps to",dfps_num/dfps_den,"fps.")
     super = core.mv.Super(clip, pel=2, sharp=0, rfilter=2)
     mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
     mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=3, dct=5)
