@@ -1,4 +1,4 @@
-Fork of @phiresky's motioninterpolation.vpy gist
+#Fork of @phiresky's motioninterpolation.vpy gist
 # vim: set ft=python:
 
 # see the README at https://gist.github.com/phiresky/4bfcfbbd05b3c2ed8645
