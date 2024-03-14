@@ -51,7 +51,7 @@ if not (mpix > 3.6 or clip.fps_num/clip.fps_den > 59):
     }
 
     if mpix > 2.1:
-        # set motion interpolation resolution to low when interpolating frames for videos exceeding FHD res.
+        # set motion interpolation resolution quality to low when interpolating frames for videos exceeding FHD res.
         # see the description of these parameters in http://avisynth.org.ru/mvtools/mvtools2.html#functions
         analParams['search'] = 0
         blockParams['mode'] = 0
