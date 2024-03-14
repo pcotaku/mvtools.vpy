@@ -1,4 +1,3 @@
-#Fork of @phiresky's motioninterpolation.vpy gist
 # vim: set ft=python:
 
 # see the README at https://gist.github.com/phiresky/4bfcfbbd05b3c2ed8645
@@ -35,8 +34,8 @@ else:
 # resolution in megapixels. 1080p ≈ 2MP, 720p ≈ 1MP
 mpix = clip.width * clip.height / 1000000
 
-# Skip interpolation for >1080p or 60 Hz content due to performance
-if not (mpix > 2.5 or clip.fps_num/clip.fps_den > 59):
+# Skip interpolation for >2K or 60 Hz content due to performance
+if not (mpix > 3.6 or clip.fps_num/clip.fps_den > 59):
     analParams = {
         'overlap': 0,
         'search': 3,
@@ -51,8 +50,8 @@ if not (mpix > 2.5 or clip.fps_num/clip.fps_den > 59):
         'mode': 3,
     }
 
-    if mpix > 1.5:
-        # can't handle these on Full HD with Intel i5-2500k
+    if mpix > 2.1:
+        # set motion interpolation resolution to low when interpolating frames for videos exceeding FHD res.
         # see the description of these parameters in http://avisynth.org.ru/mvtools/mvtools2.html#functions
         analParams['search'] = 0
         blockParams['mode'] = 0
