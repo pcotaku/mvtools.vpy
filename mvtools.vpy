@@ -35,7 +35,7 @@ else:
 mpix = clip.width * clip.height / 1000000
 
 # Skip interpolation for >2K or 60 Hz content due to performance
-if not (mpix > 3.6 or clip.fps_num/clip.fps_den > 59):
+if not (mpix > 3.7 or clip.fps_num/clip.fps_den > 61):
     analParams = {
         'overlap': 0,
         'search': 3,
@@ -64,11 +64,9 @@ if not (mpix > 3.6 or clip.fps_num/clip.fps_den > 59):
     dst_fps_den = int(1e4)
     print("Reflowing from {} fps to {} fps (quality={})".format(clip.fps_num/clip.fps_den,dst_fps_num/dst_fps_den,quality))
     
-    sup  = core.mv.Super(clip, pel=2)
-    bvec = core.mv.Analyse(sup, isb=True, **analParams)
-    fvec = core.mv.Analyse(sup, isb=False, **analParams)
-    clip = core.mv.BlockFPS(clip, sup, bvec, fvec, 
-            num=dst_fps_num, den=dst_fps_den, 
-            **blockParams)
+    super = core.mv.Super(clip, pel=2, sharp=0, rfilter=2)
+    mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
+    mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=3, dct=5)
+    clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=dst_fps_num, den=dst_fps_den, mask=1)
 
 clip.set_output()
