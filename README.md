@@ -1,1 +1,1 @@
-fork of [@phiresky](https://gist.github.com/phiresky)https://gist.github.com/phiresky's motioninterpolation.vpy gist.
+fork of @maoiscat[]([url](https://github.com/maoiscat/mpv-mvtools-script/blob/main/mvtools_3.py)) script and [@phiresky](https://gist.github.com/phiresky)https://gist.github.com/phiresky's motioninterpolation.vpy gist.
