@@ -35,7 +35,7 @@ else:
 mpix = clip.width * clip.height / 1000000
 
 # Skip interpolation for >2K or 60 Hz content due to performance
-if not (mpix > 3.7 or clip.fps_num/clip.fps_den > 61):
+if not (mpix > 3.6 or clip.fps_num/clip.fps_den > 59):
     analParams = {
         'overlap': 0,
         'search': 3,
