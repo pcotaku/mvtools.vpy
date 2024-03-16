@@ -34,20 +34,20 @@ else:
 # resolution in megapixels. 1080p ≈ 2MP, 720p ≈ 1MP
 mpix = clip.width * clip.height / 1000000
 
-# Skip interpolation for >2K or 60 Hz content due to performance
+# Skip interpolation for >2K or 60 Hz content due to performance constraints
 if not (mpix > 3.6 or clip.fps_num/clip.fps_den > 59):
     analParams = {
         'overlap': 0,
         'search': 3,
         'truemotion': True,
-        #'chrome': True,
-        #'blksize':16,
-        #'searchparam':1
+        'chroma': True,
+        'blksize':16,
+        'searchparam':2
     }
     blockParams = {
         'thscd1': ignore_threshold,
         'thscd2': int(scene_change_percentage*255/100),
-        'mode': 3,
+        'mode': 1,
     }
 
     if mpix > 2.1:
@@ -62,11 +62,11 @@ if not (mpix > 3.6 or clip.fps_num/clip.fps_den > 59):
 
     dst_fps_num = int(dst_fps * 1e4)
     dst_fps_den = int(1e4)
-    print("Reflowing from {} fps to {} fps (quality={})".format(clip.fps_num/clip.fps_den,dst_fps_num/dst_fps_den,quality))
+    print("[vapoursynth] Reflowing from {} fps to {} fps (quality={})".format(clip.fps_num/clip.fps_den,dst_fps_num/dst_fps_den,quality))
     
-    super = core.mv.Super(clip, pel=2, sharp=0, rfilter=2)
-    mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
-    mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=3, dct=5)
+    super = core.mv.Super(clip, pel=2, sharp=2, rfilter=4)
+    mvfw = core.mv.Analyse(super, blksize=16, isb=False, search=3, dct=5)
+    mvbw = core.mv.Analyse(super, blksize=16, isb=True,  search=3, dct=5)
     clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=dst_fps_num, den=dst_fps_den, mask=1)
 
 clip.set_output()
