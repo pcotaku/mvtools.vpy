@@ -15,9 +15,6 @@ ignore_threshold=140
 scene_change_percentage=15
 
 dst_fps = display_fps
-# Interpolating to fps higher than 60 is too CPU-expensive, smoothmotion can handle the rest.
-# while (dst_fps > 60):
-#    dst_fps /= 2
 
 if "video_in" in globals():
     # realtime
@@ -34,8 +31,8 @@ else:
 # resolution in megapixels. 1080p ≈ 2MP, 720p ≈ 1MP
 mpix = clip.width * clip.height / 1000000
 
-# Skip interpolation for >2K or 60 Hz content due to performance constraints
-if not (mpix > 3.6 or clip.fps_num/clip.fps_den > 59):
+# Skip interpolation for >FHD content due to performance constraints
+if not (mpix > 2.1):
     analParams = {
         'overlap': 0,
         'search': 3,
