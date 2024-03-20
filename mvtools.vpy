@@ -4,17 +4,19 @@
 # source: https://github.com/mpv-player/mpv/issues/2149
 # source: https://github.com/mpv-player/mpv/issues/566
 # source: https://github.com/haasn/gentoo-conf/blob/nanodesu/home/nand/.mpv/filters/mvtools.vpy
-
-import vapoursynth
-
-core = vapoursynth.core
 # ref: http://avisynth.org.ru/mvtools/mvtools2.html#functions
+
+import vapoursynth as vs
+core = vs.core
+clip = video_in.resize.Bicubic(format=vs.YUV420P8)
+vden = 1000
+vfps = container_fps*vden
+dfps = display_fps*vden
+
 # default is 400, less means interpolation will only happen when it will work well
 ignore_threshold=140
 # if n% of blocks change more than threshold then don't interpolate at all (default is 51%)
 scene_change_percentage=15
-
-dst_fps = display_fps
 
 if "video_in" in globals():
     # realtime
@@ -26,7 +28,7 @@ if "video_in" in globals():
 else:
     # run with vspipe
     clip = core.ffms2.Source(source=in_filename)
-    dst_fps=float(dst_fps)
+    dfps=float(dfps)
 
 # resolution in megapixels. 1080p ≈ 2MP, 720p ≈ 1MP
 mpix = clip.width * clip.height / 1000000
@@ -56,14 +58,13 @@ if not (mpix > 2.1):
     else:
         quality = 'high'
 
-
-    dst_fps_num = int(dst_fps * 1e4)
-    dst_fps_den = int(1e4)
-    print("[vapoursynth] Reflowing from {} fps to {} fps (quality={})".format(clip.fps_num/clip.fps_den,dst_fps_num/dst_fps_den,quality))
-    
-    super = core.mv.Super(clip, pel=2, sharp=2, rfilter=4)
-    mvfw = core.mv.Analyse(super, blksize=16, isb=False, search=3, dct=5)
-    mvbw = core.mv.Analyse(super, blksize=16, isb=True,  search=3, dct=5)
-    clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=dst_fps_num, den=dst_fps_den, mask=1)
+    dfps_num = int(dfps * 1e4)
+    dfps_den = int(1e4)
+    print("[vapoursynth] Reflowing from {} fps to {} fps (quality={})".format(vfps/vden,dfps_num/dfps_den,quality))
+    clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
+    super = core.mv.Super(clip, pel=2, sharp=0, rfilter=2)
+    mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
+    mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=3, dct=5)
+    clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=dfps, den=vden, mask=1)
 
 clip.set_output()
