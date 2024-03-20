@@ -1,11 +1,10 @@
-# vim: set ft=python:
-
 # see the README at https://gist.github.com/phiresky/4bfcfbbd05b3c2ed8645
 # source: https://github.com/mpv-player/mpv/issues/2149
 # source: https://github.com/mpv-player/mpv/issues/566
 # source: https://github.com/haasn/gentoo-conf/blob/nanodesu/home/nand/.mpv/filters/mvtools.vpy
 # ref: http://avisynth.org.ru/mvtools/mvtools2.html#functions
 
+# vim: set ft=python:
 import vapoursynth as vs
 core = vs.core
 clip = video_in.resize.Bicubic(format=vs.YUV420P8)
@@ -40,8 +39,8 @@ if not (mpix > 2.1):
         'search': 3,
         'truemotion': True,
         'chroma': True,
-        'blksize':16,
-        'searchparam':2
+        'blksize':32,
+        'searchparam':3
     }
     blockParams = {
         'thscd1': ignore_threshold,
