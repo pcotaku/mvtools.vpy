@@ -50,7 +50,7 @@ if not (mpix > 2.1):
 
     dfps_num = int(dfps * 1e4)
     dfps_den = int(1e4)
-    print("[vapoursynth] Reflowing from {} fps to {} fps.".format(vfps/vden,dfps_num/dfps_den))
+    print("[vapoursynth] Motionflow interpolation - reflowing from {} fps to {} fps.".format(vfps/vden,dfps_num/dfps_den))
     clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
     super = core.mv.Super(clip, pel=2, sharp=0, rfilter=2)
     mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
