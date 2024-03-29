@@ -48,18 +48,9 @@ if not (mpix > 2.1):
         'mode': 1,
     }
 
-    if mpix > 2.1:
-        # set motion interpolation resolution quality to low when interpolating frames for videos exceeding FHD res.
-        # see the description of these parameters in http://avisynth.org.ru/mvtools/mvtools2.html#functions
-        analParams['search'] = 0
-        blockParams['mode'] = 0
-        quality = 'low'
-    else:
-        quality = 'high'
-
     dfps_num = int(dfps * 1e4)
     dfps_den = int(1e4)
-    print("[vapoursynth] Reflowing from {} fps to {} fps (quality={})".format(vfps/vden,dfps_num/dfps_den,quality))
+    print("[vapoursynth] Reflowing from {} fps to {} fps.".format(vfps/vden,dfps_num/dfps_den))
     clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
     super = core.mv.Super(clip, pel=2, sharp=0, rfilter=2)
     mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
