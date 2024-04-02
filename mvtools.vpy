@@ -49,17 +49,16 @@ if not (mpix > 2.1 or vfps/vden > 59):
     if mpix > 1.5:
         analParams['search'] = 0
         blockParams['mode'] = 0
-        quality = 'low'
+        quality = 'Low'
     else:
-        quality = 'high'
+        quality = 'High'
 
     dfps_num = int(dfps * 1e4)
     dfps_den = int(1e4)
-    print("[vapoursynth] Motionflow interpolation - reflowing from {} fps to {} fps. (Quality={})".format(vfps/vden,dfps_num/dfps_den,quality))
+    print("[vapoursynth] {} quality motionflow interpolation: reflowing from {} fps to {} fps.".format(quality,vfps/vden,dfps_num/dfps_den))
     clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
     super = core.mv.Super(clip, pel=1, sharp=0, rfilter=4)
     mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
     mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=3, dct=5)
     clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=dfps, den=vden, mask=1)
-
 clip.set_output()
