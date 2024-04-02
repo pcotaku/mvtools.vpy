@@ -1,10 +1,3 @@
-# see the README at https://gist.github.com/phiresky/4bfcfbbd05b3c2ed8645
-# source: https://github.com/mpv-player/mpv/issues/2149
-# source: https://github.com/mpv-player/mpv/issues/566
-# source: https://github.com/haasn/gentoo-conf/blob/nanodesu/home/nand/.mpv/filters/mvtools.vpy
-# ref: http://avisynth.org.ru/mvtools/mvtools2.html#functions
-
-# vim: set ft=python:
 import vapoursynth as vs
 core = vs.core
 clip = video_in.resize.Bicubic(format=vs.YUV420P8)
@@ -23,7 +16,7 @@ if "video_in" in globals():
     # Needed because clip FPS is missing
     src_fps_num = int(container_fps * 1e8)
     src_fps_den = int(1e8)
-    clip = core.std.AssumeFPS(clip, fpsnum = src_fps_num, fpsden = src_fps_den)
+    clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
 else:
     # run with vspipe
     clip = core.ffms2.Source(source=in_filename)
@@ -52,12 +45,10 @@ if not (mpix > 2.1 or vfps/vden > 59):
         quality = 'Low'
     else:
         quality = 'High'
-
     dfps_num = int(dfps * 1e4)
     dfps_den = int(1e4)
     print("[vapoursynth] {} quality motionflow interpolation: reflowing from {} fps to {} fps.".format(quality,vfps/vden,dfps_num/dfps_den))
-    clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
-    super = core.mv.Super(clip, pel=1, sharp=0, rfilter=4)
+    super = core.mv.Super(clip, pel=2, sharp=2, rfilter=4)
     mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
     mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=3, dct=5)
     clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=dfps, den=vden, mask=1)
