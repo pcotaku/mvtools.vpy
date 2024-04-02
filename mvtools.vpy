@@ -32,15 +32,12 @@ else:
 # resolution in megapixels. 1080p ≈ 2MP, 720p ≈ 1MP
 mpix = clip.width * clip.height / 1000000
 
-# Skip interpolation for >FHD content due to performance constraints
-if not (mpix > 2.1):
+# Skip interpolation for >FHD & 60fps content due to performance constraints
+if not (mpix > 2.1 or vfps/vden > 59):
     analParams = {
         'overlap': 0,
         'search': 3,
-        'truemotion': True,
-        'chroma': True,
-        'blksize':32,
-        'searchparam':3
+        'truemotion': True,    
     }
     blockParams = {
         'thscd1': ignore_threshold,
@@ -48,11 +45,19 @@ if not (mpix > 2.1):
         'mode': 1,
     }
 
+# reduce motion interpolation quality for media exceeding HD
+    if mpix > 1.5:
+        analParams['search'] = 0
+        blockParams['mode'] = 0
+        quality = 'low'
+    else:
+        quality = 'high'
+
     dfps_num = int(dfps * 1e4)
     dfps_den = int(1e4)
-    print("[vapoursynth] Motionflow interpolation - reflowing from {} fps to {} fps.".format(vfps/vden,dfps_num/dfps_den))
+    print("[vapoursynth] Motionflow interpolation - reflowing from {} fps to {} fps. (Quality={})".format(vfps/vden,dfps_num/dfps_den,quality))
     clip = core.std.AssumeFPS(clip, fpsnum=vfps, fpsden=vden)
-    super = core.mv.Super(clip, pel=2, sharp=0, rfilter=2)
+    super = core.mv.Super(clip, pel=1, sharp=0, rfilter=4)
     mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=3, dct=5)
     mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=3, dct=5)
     clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=dfps, den=vden, mask=1)
