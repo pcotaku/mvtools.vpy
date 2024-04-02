@@ -46,7 +46,7 @@ if not (mpix > 2.1 or vfps/vden > 59):
     }
 
 # reduce motion interpolation quality for media exceeding HD
-    if mpix > 1.5:
+    if mpix > 0.9:
         analParams['search'] = 0
         blockParams['mode'] = 0
         quality = 'Low'
