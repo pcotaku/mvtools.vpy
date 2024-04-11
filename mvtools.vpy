@@ -25,8 +25,8 @@ else:
 # resolution in megapixels. 1080p ≈ 2MP, 720p ≈ 1MP
 mpix = clip.width * clip.height / 1000000
 
-# Skip interpolation for >FHD & 60fps content due to performance constraints
-if not (mpix > 2.1 or vfps/vden > 59):
+# Skip interpolation for >FHD content due to performance constraints
+if not mpix > 2.1:
     analParams = {
         'overlap': 0,
         'search': 3,
