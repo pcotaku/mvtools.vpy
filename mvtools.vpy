@@ -1,14 +1,14 @@
 import vapoursynth as vs
 core = vs.core
 clip = video_in.resize.Bicubic(format=vs.YUV420P8)
-vden = 1000
+vden = 1
 vfps = container_fps*vden
 dfps = display_fps*vden
 
 # default is 400, less means interpolation will only happen when it will work well
-ignore_threshold=140
+ignore_threshold=400
 # if n% of blocks change more than threshold then don't interpolate at all (default is 51%)
-scene_change_percentage=15
+scene_change_percentage=51
 
 if "video_in" in globals():
     # realtime
