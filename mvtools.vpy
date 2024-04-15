@@ -1,7 +1,7 @@
 import vapoursynth as vs
 core = vs.core
 clip = video_in.resize.Bicubic(format=vs.YUV420P8)
-vden = 1
+vden = 1000
 vfps = container_fps*vden
 dfps = display_fps*vden
 
