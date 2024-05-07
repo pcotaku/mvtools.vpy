@@ -8,7 +8,7 @@ dfps = display_fps*vden
 # default is 400, less means interpolation will only happen when it will work well
 ignore_threshold=400
 # if n% of blocks change more than threshold then don't interpolate at all (default is 51%)
-scene_change_percentage=51
+scene_change_percentage=100
 
 if "video_in" in globals():
     # realtime
