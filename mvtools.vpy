@@ -44,7 +44,7 @@ if mpix <= 2.1:
     else:
         quality = 'High'
 
-    print(f"[vapoursynth] {quality} quality motionflow interpolation: reflowing from {vfps/1000} fps to {dfps/1000} fps.")
+    print(f"\n[vapoursynth] {quality} quality motionflow interpolation: reflowing from {vfps/1000} fps to {dfps/1000} fps.")
     super = core.mv.Super(clip, pel=2, sharp=2, rfilter=4)
     mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=analParams['search'], dct=5)
     mvbw = core.mv.Analyse(super, blksize=32, isb=True,  search=analParams['search'], dct=5)
