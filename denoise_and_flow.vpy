@@ -1,67 +1,59 @@
 import vapoursynth as vs
 core = vs.core
 
-# --- Input/Output Handling ---
+# --- Global VapourSynth Core Settings ---
+# Reduce CPU threads if thermal throttling is an issue.
+# This limits VapourSynth's CPU-based frame processing.
+# Adjust 'N' based on your CPU cores and throttling behavior.
+# Smaller N = less CPU heat, but slower processing if CPU is bottleneck.
+# A value of 1 effectively makes it single-threaded for core ops.
+core.num_threads = 16 # Example: Limit to 4 CPU threads (adjust as needed)
+
 if "video_in" in globals():
-    # Real-time processing (e.g., via mpv)
     clip = video_in
     vfps = container_fps * 1000
     dfps = display_fps * 1000
     clip = core.std.AssumeFPS(clip, fpsnum=int(vfps), fpsden=1000)
 else:
-    # Run with vspipe (for standalone testing or batch processing)
-    # Ensure you have ffms2 plugin installed for this
     clip = core.ffms2.Source(source=in_filename)
     vfps = container_fps * 1000
     dfps = display_fps * 1000
 
-# --- Format Conversion for Denoising ---
+# --- Format Conversion for Denoising (GPU-Friendly) ---
 # BM3DCUDA requires 32-bit float format.
-# Convert to YUV444PS for CBM3D if chroma denoising is desired,
-# otherwise YUV420PS is fine, but 444PS is generally more robust for BM3D.
-# We'll stick to YUV420P8 for the final output as per original script.
-# The internal processing for BM3DCUDA will be float.
 denoise_clip = clip.resize.Bicubic(format=vs.YUV420PS) # Intermediate float format for denoising
 
-# --- BM3DCUDA Denoising ---
-# Parameters for BM3DCUDA.BM3D
-# sigma: Denoising strength. Adjust as needed. Higher values mean more denoising.
-# block_step, bm_range, radius, ps_num, ps_range: Common BM3D parameters.
-# chroma=True: Enables CBM3D for chroma channels. Requires YUV444PS input.
-# device_id: If you have multiple GPUs, specify which one (0 is typically the first).
-# fast=True: Multi-threaded copy, generally faster.
+# --- BM3DCUDA Denoising (GPU) ---
 print("[vapoursynth] Applying BM3DCUDA_RTC denoising...")
 denoise_clip = core.bm3dcuda_rtc.BM3D(
     denoise_clip,
-    sigma=[3.0, 3.0, 3.0], # Sigma for Y, U, V planes. Adjust as needed.
+    sigma=[3.0, 3.0, 3.0],
     block_step=[8, 8, 8],
     bm_range=[9, 9, 9],
-    radius=0, # Spatial denoising. Use >0 for temporal denoising with BM3Dv2.
+    radius=0,
     ps_num=[2, 2, 2],
     ps_range=[4, 4, 4],
-    chroma=False, # Set to True if using YUV444PS input for chroma denoising
+    chroma=False,
     device_id=0,
     fast=True,
-    extractor_exp=0 # Set to a positive integer (e.g., 3) for deterministic output, default 0 for non-deterministic.
+    extractor_exp=0
 )
 
 # Convert back to YUV420P8 for MVTools and final output.
-# You might want to experiment with different dither methods here based on output quality.
+# You might consider using a GPU-accelerated resizer here if available (e.g., from vs-gpu if you install it)
 clip = denoise_clip.resize.Bicubic(format=vs.YUV420P8)
 
-# --- Motion Interpolation (MVTools) ---
+# --- Motion Interpolation (MVTools - Largely CPU-bound) ---
 # Calculate megapixels (resolution) from the processed clip
 mpix = clip.width * clip.height / 1000000
 
-# Set thresholds
 ignore_threshold = 1
 scene_change_percentage = 99
 
-# Skip interpolation for >FHD content due to performance constraints
 if mpix <= 2.1:
     analParams = {
         'overlap': 0,
-        'search': 3,
+        'search': 3, # Keep this value as is, or try '0' for less CPU if needed
         'truemotion': True,
     }
     blockParams = {
@@ -70,9 +62,8 @@ if mpix <= 2.1:
         'mode': 1,
     }
 
-    # Reduce motion interpolation quality for media exceeding HD
     if mpix > 0.9:
-        analParams['search'] = 0
+        analParams['search'] = 0 # Already optimized for >HD
         blockParams['mode'] = 0
         quality = 'Low'
     else:
@@ -80,13 +71,10 @@ if mpix <= 2.1:
 
     print(f"\n[vapoursynth] {quality} quality motionflow interpolation: reflowing from {vfps/1000} fps to {dfps/1000} fps.")
 
-    # Super: Prepares the clip for motion analysis
-    super = core.mv.Super(clip, pel=4, sharp=2, rfilter=4)
-    # Analyse: Calculates forward and backward motion vectors
-    mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=analParams['search'], dct=5)
-    mvbw = core.mv.Analyse(super, blksize=32, isb=True, search=analParams['search'], dct=5)
-    # FlowFPS: Performs the actual frame interpolation
+    super = core.mv.Super(clip, pel=2, sharp=2, rfilter=4)
+    # Consider reducing 'dct' here for less CPU, e.g., dct=0 for no DCT
+    mvfw = core.mv.Analyse(super, blksize=32, isb=False, search=analParams['search'], dct=5) # Can change dct
+    mvbw = core.mv.Analyse(super, blksize=32, isb=True, search=analParams['search'], dct=5) # Can change dct
     clip = core.mv.FlowFPS(clip, super, mvbw, mvfw, num=int(dfps), den=1000, mask=1)
 
-# --- Set Output ---
 clip.set_output()
